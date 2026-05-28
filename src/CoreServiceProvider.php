@@ -1,6 +1,6 @@
 <?php
 
-namespace LindenCMS\Core\Laravel;
+namespace LindenCMS\Core;
 
 use Illuminate\Support\ServiceProvider;
 use LindenCMS\Core\Services\Init;
