@@ -19,7 +19,7 @@ class Init implements InitContract
         $reflection = new \ReflectionClass($node);
         $this->initRoot($node, $reflection);
         $this->initChildren($node, $reflection);
-        $this->initMagic($node, $reflection);
+        // $this->initMagic($node, $reflection);
     }
 
     private function newTypeResolver()

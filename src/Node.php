@@ -3,7 +3,8 @@
 namespace LindenCMS\Core;
 
 use LindenCMS\Core\Factories\NodeFactory;
-use LindenCMS\Core\Traits\HasMagic;
+use LindenCMS\Core\Traits\HasAutoContexts;
+// use LindenCMS\Core\Traits\HasMagic;
 use Illuminate\Support\Str;
 use LindenCMS\Core\Traits\HasAttributes;
 use LindenCMS\Core\Traits\HasContexts;
@@ -11,7 +12,7 @@ use LindenCMS\Core\Traits\HasTreeStructure;
 
 abstract class Node
 {
-    use HasTreeStructure, HasAttributes, HasContexts, HasMagic;
+    use HasTreeStructure, HasAttributes, HasContexts, HasAutoContexts/* , HasMagic */;
 
     public array $nodeAttributes = [];
     protected readonly string $uid;
