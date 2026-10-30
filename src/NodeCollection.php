@@ -22,15 +22,23 @@ class NodeCollection extends Node implements /* \ArrayAccess,  */ \Countable, \I
     }
 
     /**
-     * Make parentless typed Item as a child of $this->parent
-     * Return new instances on every call
+     * makePrototype alias
      */
     public function getPrototype(): Node
     {
+        return $this->makePrototype();
+    }
+
+    /**
+     * Make parentless typed Item as a child of $this->parent
+     * Return new instances on every call
+     */
+    public function makePrototype(bool $fromThisParent = false): Node
+    {
         $prototype = get_class($this->getType())::make();
-        // if ($parent = $this->getParent()) {
-        //     $prototype->setParent($parent, $this->getParentPropertyName());
-        // }
+        if ($fromThisParent && $parent = $this->getParent()) {
+            $prototype->setParent($parent, $this->getParentPropertyName());
+        }
 
         return $prototype;
     }
@@ -89,5 +97,10 @@ class NodeCollection extends Node implements /* \ArrayAccess,  */ \Countable, \I
         }
 
         return $node;
+    }
+
+    public static function contextsDir()
+    {
+        return class_basename(self::class);
     }
 }

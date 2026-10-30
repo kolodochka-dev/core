@@ -102,8 +102,8 @@ abstract class Node
             return self::RECURSION_WALK_STATE_BREAK;
         }
 
-        foreach ($this->getChildren() as $field) {
-            $field->recursionWalk($callback, $walkCollection);
+        foreach ($this->getChildren() as $prop) {
+            $prop->recursionWalk($callback, $walkCollection);
         }
     }
 
@@ -122,5 +122,29 @@ abstract class Node
     public function formName(): string
     {
         return dot_to_html_name($this->getPath());
+    }
+
+    public function cacheInitPath(): string
+    {
+        return __DIR__ . '/../storage/cache';
+    }
+
+    public function toSchema(): array
+    {
+        $children = [];
+        foreach ($this->getChildren() as $item) {
+            $children[$item->getParentPropertyName()] = $item->toSchema();
+        }
+
+        return [
+            'type' => $this::class,
+            'attributes' => array_map(fn($item) => (array) $item, $this->nodeAttributes),
+            'children' => $children,
+        ];
+    }
+
+    public static function contextsDir()
+    {
+        return class_basename(self::class);
     }
 }

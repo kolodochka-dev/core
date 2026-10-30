@@ -5,7 +5,7 @@ namespace LindenCMS\Core\Services;
 use LindenCMS\Core\Contracts\InitContract;
 use LindenCMS\Core\Node;
 
-class Init implements InitContract
+class RecursiveInit implements InitContract
 {
     private $typeResolver;
 
@@ -77,10 +77,10 @@ class Init implements InitContract
         }
     }
 
-    private function initMagic(Node $node, \ReflectionClass $reflection): void
-    {
-        $node->initMagic($reflection);
-    }
+    // private function initMagic(Node $node, \ReflectionClass $reflection): void
+    // {
+    //     $node->initMagic($reflection);
+    // }
 
     private function initProperty(\ReflectionProperty $property, Node $parent): void
     {

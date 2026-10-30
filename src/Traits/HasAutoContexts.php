@@ -26,4 +26,9 @@ trait HasAutoContexts
             
         return $this->contextDetector;
     }
+
+    public function __call($name, mixed $data)
+    {
+        return $this->ctx()->$name($data);
+    }
 }

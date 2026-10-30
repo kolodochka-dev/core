@@ -10,7 +10,13 @@ class ContextDetector
     public function __construct(
         private Node $node
     ) {
-        $this->locations = $node->detectContextsFrom();
+        $this->locations = $this->mergeLocations($node->detectContextsFrom());
+    }
+
+    private function mergeLocations($locations): array
+    {
+        array_push($locations, 'LindenCMS\Core\Contexts');
+        return $locations;
     }
 
     public function __call($name, mixed $data)
@@ -18,25 +24,26 @@ class ContextDetector
         return $this->callContext($name, $data);
     }
 
-    protected function callContext(string $name, mixed $data)
+    protected function callContext(string $name, array $data)
     {
-        if (isset($this->contexts[$name])) {
-            $context = $this->contexts[$name];
-        } else {
-            $context = $this->detectContext($name);
-            $this->contexts[$name] = $context;
-        }
+        $context = $this->detectContext($name);
 
         if (!$context) {
-            throw new \Exception("Callable context $name isn't found!");
+            throw new \Exception("Callable context '$name' for class " . $this->node::class . " isn't found!");
         }
 
-        return $context($data);
+        $args = array_shift($data);
+
+        return $context($args ?? null, ...$data);
     }
 
     protected function detectContext(string $name): ?callable
     {
-        $parts = array_map('ucfirst', preg_split('/(?=[A-Z])/', $name));
+        if (isset($this->contexts[$name])) {
+            return $this->contexts[$name];
+        }
+
+        $parts = array_map('ucfirst', explode('_', $name));
         $path = implode('/', $parts);
         $classBuilders = [
             fn($namespace) => implode('\\', [
@@ -56,6 +63,8 @@ class ContextDetector
                 $class = $classBuidler($namespace);
                 if (class_exists($class)) {
                     $instance = new $class($this->node);
+                    $this->contexts[$name] = $instance;
+
                     return $instance;
                 }
             }

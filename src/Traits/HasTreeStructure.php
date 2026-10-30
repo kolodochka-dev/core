@@ -13,9 +13,9 @@ trait HasTreeStructure
 
     public function getChildren(): array
     {
-        foreach (array_keys($this->magicProps) as $propName) {
-            $this->callMagicProp($propName);
-        }
+        // foreach (array_keys($this->magicProps) as $propName) {
+        //     $this->callMagicProp($propName);
+        // }
 
         return $this->children;
     }
@@ -200,16 +200,18 @@ trait HasTreeStructure
         return $trace;
     }
 
-    public function structTraceTo(string $to): array
+    public function structTraceTo(string $to, bool $isAbsolute = false): array
     {
-        // $trace = [$this];
         $trace = [];
-        // $path = '';
         $next = $this;
-        foreach (explode('.', $to) as $item) {
-            $next = $next->structPath($item);
+        $pathItems = explode('.', $to);
+        if ($isAbsolute) {
+            array_shift($pathItems);
+        }
+
+        foreach ($pathItems as $pathItem) {
+            $next = $next->structPath($pathItem);
             $trace[] = $next;
-            // $path .= "$item.";
         }
 
         return $trace;

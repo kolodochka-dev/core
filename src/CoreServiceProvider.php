@@ -3,18 +3,16 @@
 namespace LindenCMS\Core;
 
 use Illuminate\Support\ServiceProvider;
-use LindenCMS\Core\Services\Init;
-use LindenCMS\Core\Contracts\InitContract;
+use LindenCMS\Core\Services\RecursiveInit;
+use LindenCMS\Core\Services\CachedInit;
 
 class CoreServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(InitContract::class, fn($app) => new Init);
     }
 
     public function boot(): void
     {
-        //
     }
 }

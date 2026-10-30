@@ -122,6 +122,22 @@ trait HasCollection
         return reset($items);
     }
 
+    public function find(string $key)
+    {
+        $items = $this->getChildren();
+        return $items[$key];
+    }
+
+
+    public function remove($key)
+    {
+        $items = $this->getChildren();
+        unset($items[$key]);
+        $this->setChildren($items);
+
+        return $items;
+    }
+
     public function setType(Node $type): static
     {
         $this->type = $type;

@@ -14,4 +14,14 @@ abstract class NodeValue extends Node
 
         return $this;
     }
+
+    public function __tostring(): string
+    {
+        return (string) $this->get();
+    }
+
+    public static function contextsDir()
+    {
+        return class_basename(self::class);
+    }
 }

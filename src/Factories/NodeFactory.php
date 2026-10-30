@@ -2,14 +2,19 @@
 
 namespace LindenCMS\Core\Factories;
 
-use LindenCMS\Core\Contracts\InitContract;
 use LindenCMS\Core\Node;
+use LindenCMS\Core\Services\RecursiveInit;
+use LindenCMS\Core\Services\CachedInit;
 
+// TODO: cache disabling from config in CMS layer 
+// TODO: cache revalidation command 
 class NodeFactory
 {
     public function __construct(
-        private InitContract $initService
-    ) {}
+        private RecursiveInit $recursiveInitService,
+        private CachedInit $cachedInitService,
+    ) {
+    }
 
     public function create(string $className, mixed $parent = null, string $parentPropertyName = ''): Node
     {
@@ -18,20 +23,16 @@ class NodeFactory
          */
         $instance = new $className;
         $instance->setParent($parent, $parentPropertyName);
-        $this->initService->init($instance);
 
-        // Deferred Init:
-        // $instance->recursionWalk(function ($item) use ($instance) {
-        //     if ($item != $instance && $item->isDeferredInit()) {
-        //         $this->initService->init($item);
-        //         return BaseComponent::RECURSION_WALK_STATE_BREAK; // <-------- stop the propogation of nested entities
-        //     }
-        // });
-
-        // // Hooks Call:
-        // $instance->recursionWalk(function ($item) {
-        //     $item->afterInit();
-        // });
+        if ($this->cachedInitService->isCacheExists($instance)) {
+            $this->cachedInitService->createCache($instance);
+        }
+        
+        if (false) {
+            $this->cachedInitService->init($instance, $this->cachedInitService->getCache($instance));
+        } else {
+            $this->recursiveInitService->init($instance);
+        }
 
         return $instance;
     }
