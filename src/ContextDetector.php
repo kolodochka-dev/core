@@ -33,8 +33,10 @@ class ContextDetector
         }
 
         $args = array_shift($data);
-
-        return $context($args ?? null, ...$data);
+       
+        return is_array($args) 
+            ? $context(...$args)
+            : $context($args);
     }
 
     protected function detectContext(string $name): ?callable
