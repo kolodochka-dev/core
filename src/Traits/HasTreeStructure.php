@@ -154,8 +154,9 @@ trait HasTreeStructure
     public function path(string $path, bool $isAbsolute = false): ?node
     {
         $component = $this;
+        $i = 0;
         foreach (explode('.', $path) as $propertyName) {
-            if ($isAbsolute && $propertyName == $this->toSnakeCase()) {
+            if ($isAbsolute && $propertyName == $this->toSnakeCase() && $i++ == 0) {
                 continue;
             }
 
@@ -163,7 +164,8 @@ trait HasTreeStructure
                 return null;
             }
 
-            $component = $component->{$propertyName};
+            $component = $component->children[$propertyName];
+            // $component = $component->{$propertyName};
         }
 
         return $component;
@@ -188,7 +190,7 @@ trait HasTreeStructure
         return $node;
     }
 
-    public function traceTo(string $to): array 
+    public function traceTo(string $to): array
     {
         $trace = [$this];
         $path = '';
