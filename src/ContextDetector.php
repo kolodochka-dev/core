@@ -32,11 +32,33 @@ class ContextDetector
             throw new \Exception("Callable context '$name' for class " . $this->node::class . " isn't found!");
         }
 
-        $args = array_shift($data);
-       
-        return is_array($args) 
-            ? $context(...$args)
-            : $context($args);
+        return $this->invokeContext($context, $data);
+    }
+
+    protected function invokeContext(callable $context, array $data): mixed
+    {
+        $ref = new \ReflectionFunction(\Closure::fromCallable($context));
+        $params = $ref->getParameters();
+
+        if ($params === []) {
+            return $context();
+        }
+
+        $args = [];
+        foreach ($params as $p) {
+            $pName = $p->getName();
+
+            if (array_key_exists($pName, $data)) {
+                $args[] = $data[$pName];
+            } elseif ($p->isOptional()) {
+                $args[] = $p->getDefaultValue();
+            }
+        }
+        
+        if ($args) {
+            return $context(...$args);
+        }
+        return $context(...$data);
     }
 
     protected function detectContext(string $name): ?callable
